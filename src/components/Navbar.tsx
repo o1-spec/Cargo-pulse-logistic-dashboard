@@ -5,7 +5,7 @@ function Navbar() {
   const [darkMode, setDarkMode] = useState(false);
 
   return (
-    <div className=" flex items-center gap-10 py-4 px-8">
+    <div className="flex items-center gap-10 py-4 px-8 bg-[#f7f7f7] fixed top-0 left-[17%] right-0 z-50">
       <div className="relative basis-[85%]">
         <Search className="absolute w-5 h-5 top-2 left-3" />
         <input
@@ -20,7 +20,7 @@ function Navbar() {
           className="p-2 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700"
         >
           {darkMode ? (
-            <Sun className="w-5 h-5 text-[#40c057]" />
+            <Sun className="w-5 h-5 text-yellow-600" />
           ) : (
             <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           )}
