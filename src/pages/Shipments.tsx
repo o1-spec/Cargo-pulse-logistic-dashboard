@@ -15,6 +15,7 @@ import { ShipmentType } from "../types/ShipmentType";
 
 function Shipments() {
   const { shipments } = useShipmentContext(); // ✅ Fetch shipments from context
+  console.log(shipments);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [filterLocation, setFilterLocation] = useState("All");
