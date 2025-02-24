@@ -18,15 +18,15 @@ function Navbar() {
 
       {/* Icons */}
       <div className="flex items-center gap-8 basis-[15%]">
-        {/* Dark Mode Toggle */}
+        {/* ✅ Toggle Dark Mode */}
         <button
           onClick={toggleDarkMode}
           className="p-2 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700"
         >
           {darkMode ? (
-            <Sun className="w-5 h-5 text-yellow-500" />
+            <Sun className="w-5 h-5 text-yellow-500" /> // 🌞 Show Sun in Dark Mode
           ) : (
-            <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+            <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" /> // 🌙 Show Moon in Light Mode
           )}
         </button>
 
