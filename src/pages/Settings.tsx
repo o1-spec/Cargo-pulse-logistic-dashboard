@@ -1,7 +1,12 @@
 import { useShipmentContext } from "../context/useShipmentContext";
 
 function Settings() {
-  const { darkMode, toggleDarkMode } = useShipmentContext();
+  const {
+    darkMode,
+    toggleDarkMode,
+    notificationsEnabled,
+    toggleNotifications,
+  } = useShipmentContext();
 
   return (
     <div className="p-6 w-full min-h-screen">
@@ -28,29 +33,12 @@ function Settings() {
         <h2 className="text-lg font-semibold mb-2">Notifications</h2>
         <div className="flex items-center justify-between">
           <p className="text-gray-700 dark:text-gray-300">Shipment Updates</p>
-          <input type="checkbox" className="w-6 h-6" defaultChecked />
-        </div>
-      </div>
-
-      {/* Auto-Update Settings */}
-      <div className="bg-white dark:bg-[#1a1a1a] p-4 rounded-lg shadow-md mb-6">
-        <h2 className="text-lg font-semibold mb-2">Auto-Update</h2>
-        <div className="flex items-center justify-between">
-          <p className="text-gray-700 dark:text-gray-300">
-            Enable Real-Time Shipment Updates
-          </p>
-          <input type="checkbox" className="w-6 h-6" defaultChecked />
-        </div>
-      </div>
-
-      {/* Data Persistence */}
-      <div className="bg-white dark:bg-[#1a1a1a] p-4 rounded-lg shadow-md">
-        <h2 className="text-lg font-semibold mb-2">Data Preferences</h2>
-        <div className="flex items-center justify-between">
-          <p className="text-gray-700 dark:text-gray-300">
-            Persist Shipments Across Reloads
-          </p>
-          <input type="checkbox" className="w-6 h-6" defaultChecked />
+          <input
+            type="checkbox"
+            checked={notificationsEnabled}
+            onChange={toggleNotifications}
+            className="w-6 h-6"
+          />
         </div>
       </div>
     </div>

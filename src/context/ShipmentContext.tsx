@@ -8,6 +8,10 @@ export interface ShipmentContextType {
   removeCompletedShipment: (id: string) => void;
   darkMode: boolean;
   toggleDarkMode: () => void;
+  notificationsEnabled: boolean;
+  toggleNotifications: () => void;
+  unreadNotifications: number;
+  setUnreadNotifications: (count: number) => void;
 }
 
 export const ShipmentContext = createContext<ShipmentContextType | undefined>(

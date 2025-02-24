@@ -7,13 +7,12 @@ import { ShipmentContext } from "./ShipmentContext";
 export const ShipmentProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  // Load persisted shipments from local storage
   const getStoredShipments = (): ShipmentType[] => {
     try {
       const storedShipments = localStorage.getItem("shipments");
       return storedShipments ? JSON.parse(storedShipments) : [];
     } catch (error) {
-      console.error("Error loading shipments from localStorage:", error);
+      console.error("Error loading shipments:", error);
       return [];
     }
   };
@@ -23,26 +22,24 @@ export const ShipmentProvider: React.FC<{ children: React.ReactNode }> = ({
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
   );
+  const [notificationsEnabled, setNotificationsEnabled] = useState(
+    localStorage.getItem("notifications") !== "false"
+  );
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
-  // Function to persist shipments
   const saveShipments = (updatedShipments: ShipmentType[]) => {
     localStorage.setItem("shipments", JSON.stringify(updatedShipments));
   };
 
-  // Add a new shipment & prevent duplicates
   const addShipment = (shipment: ShipmentType) => {
     setShipments((prev) => {
-      const existingShipment = prev.find((s) => s.id === shipment.id);
-      if (existingShipment) return prev; // Prevent duplicates
-
+      if (prev.some((s) => s.id === shipment.id)) return prev;
       const updatedShipments = [...prev, shipment];
       saveShipments(updatedShipments);
       return updatedShipments;
     });
-    console.log("🚛 New Shipment Added:", shipment);
   };
 
-  // Update shipment status & persist data
   const updateShipmentStatus = (id: string, newStatus: ShipmentStatus) => {
     setShipments((prev) => {
       const updatedShipments = prev.map((shipment) =>
@@ -57,9 +54,13 @@ export const ShipmentProvider: React.FC<{ children: React.ReactNode }> = ({
       saveShipments(updatedShipments);
       return updatedShipments;
     });
+
+    if (notificationsEnabled) {
+      setUnreadNotifications((prev) => prev + 1);
+      toast.success(`🚛 Shipment #${id} moved to ${newStatus}`);
+    }
   };
 
-  // Remove completed shipments & persist data
   const removeCompletedShipment = (id: string) => {
     setShipments((prev) => {
       const updatedShipments = prev.filter((shipment) => shipment.id !== id);
@@ -68,7 +69,6 @@ export const ShipmentProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  // Toggle dark mode & persist preference
   const toggleDarkMode = () => {
     setDarkMode((prev) => {
       const newMode = !prev;
@@ -78,19 +78,16 @@ export const ShipmentProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  // WebSocket event listeners
-  useEffect(() => {
-    const handleShipmentUpdate = (newShipment: ShipmentType) => {
-      if (!newShipment || !newShipment.id) return;
-      console.log("📦 Shipment Received:", newShipment);
-      addShipment(newShipment);
-    };
+  const toggleNotifications = () => {
+    setNotificationsEnabled((prev) => {
+      const newStatus = !prev;
+      localStorage.setItem("notifications", newStatus.toString());
+      return newStatus;
+    });
+  };
 
+  useEffect(() => {
     const handleStatusUpdate = (updatedShipment: ShipmentType) => {
-      if (!updatedShipment || !updatedShipment.id) return;
-      toast.success(
-        `🚛 ${updatedShipment.name} is now ${updatedShipment.status}`
-      );
       updateShipmentStatus(
         updatedShipment.id,
         updatedShipment.status as ShipmentStatus
@@ -98,19 +95,13 @@ export const ShipmentProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     const handleShipmentCompleted = (completedShipment: ShipmentType) => {
-      if (!completedShipment || !completedShipment.id) return;
-      toast.success(`✅ ${completedShipment.name} has been completed`);
       removeCompletedShipment(completedShipment.id);
     };
 
-    // Register WebSocket listeners
-    socket.on("shipmentUpdate", handleShipmentUpdate);
     socket.on("statusUpdate", handleStatusUpdate);
     socket.on("shipmentCompleted", handleShipmentCompleted);
 
-    // Cleanup WebSocket listeners on component unmount
     return () => {
-      socket.off("shipmentUpdate", handleShipmentUpdate);
       socket.off("statusUpdate", handleStatusUpdate);
       socket.off("shipmentCompleted", handleShipmentCompleted);
     };
@@ -125,6 +116,10 @@ export const ShipmentProvider: React.FC<{ children: React.ReactNode }> = ({
         removeCompletedShipment,
         darkMode,
         toggleDarkMode,
+        notificationsEnabled,
+        toggleNotifications,
+        unreadNotifications,
+        setUnreadNotifications,
       }}
     >
       {children}
