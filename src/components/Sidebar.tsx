@@ -16,7 +16,7 @@ function Sidebar() {
       : "text-gray-500";
 
   return (
-    <div className="p-6 bg-[#f7f7f7] h-[100vh] fixed font-inter">
+    <div className="p-6 bg-[#f7f7f7] dark:text-white dark:bg-[#1a1a1a] h-[100vh] fixed font-inter">
       <div className="flex gap-2.5 pb-12">
         <span className="font-bold text-[22px] pt-4">Cargo-pulse</span>
         <Truck className="w-8 h-8 rounded-full text-white bg-[#40c057] translate-y-4 py-1.5 px-1.5" />

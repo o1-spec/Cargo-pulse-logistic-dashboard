@@ -7,6 +7,7 @@ import { ShipmentType } from "../types/ShipmentType";
 import L from "leaflet";
 import toast from "react-hot-toast";
 import socket from "../utils/sockets";
+import getStatusColor from "../utils/StatusColor";
 
 // Custom marker icon for shipments
 const shipmentIcon = new L.Icon({
@@ -83,7 +84,7 @@ function RealTime() {
         ))}
         <button
           onClick={() => setSelectedStatus("All")}
-          className="px-4 py-2 bg-gray-200 rounded-lg font-semibold hover:bg-gray-300 transition cursor-pointer"
+          className="px-4 py-2 bg-gray-200 rounded-lg font-semibold hover:bg-gray-300 dark:text-[#1a1a1a] transition cursor-pointer"
         >
           Show All
         </button>
@@ -124,14 +125,14 @@ function RealTime() {
       </div>
 
       {/* Real-Time Table */}
-      <div className="bg-white p-4 rounded-lg shadow-lg mb-8">
+      <div className="bg-white dark:bg-[#1a1a1a] p-4 rounded-lg shadow-lg mb-8">
         <h2 className="text-lg font-semibold mb-4">Live Shipment Updates</h2>
 
         <div className="relative">
-          <div className="max-h-[400px] overflow-y-auto no-scrollbar">
+          <div className="max-h-[250px] overflow-y-auto no-scrollbar">
             <table className="w-full text-left border-collapse">
-              <thead className="sticky top-0 bg-white shadow-md">
-                <tr className="border-b bg-gray-50">
+              <thead className="sticky top-0 bg-white dark:bg-[#1a1a1a] shadow-md">
+                <tr className="border-b bg-gray-50 dark:bg-[#1a1a1a]">
                   <th className="p-3">ID</th>
                   <th className="p-3">Order</th>
                   <th className="p-3">Status</th>
@@ -143,15 +144,15 @@ function RealTime() {
                 {filteredShipments.map((shipment) => (
                   <tr
                     key={shipment.id}
-                    className="border-b hover:bg-gray-100 cursor-pointer"
+                    className="border-b hover:bg-gray-100 dark:hover:text-[#1a1a1a] cursor-pointer"
                     onClick={() => setSelectedShipment(shipment)}
                   >
                     <td className="p-3">{shipment.id}</td>
                     <td className="p-3">{shipment.name}</td>
                     <td
-                      className={`p-3 font-semibold rounded ${
-                        statusColors[shipment.status]
-                      }`}
+                      className={`p-3 font-semibold ${getStatusColor(
+                        shipment.status
+                      )}`}
                     >
                       {shipment.status}
                     </td>

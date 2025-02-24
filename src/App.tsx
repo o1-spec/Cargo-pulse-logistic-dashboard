@@ -17,7 +17,7 @@ function App() {
         </div>
         <div className="basis-[82%]">
           <Navbar />
-          <div className="mt-[60px] rounded-t-2xl">
+          <div className="mt-[60px] rounded-t-2xl dark:bg-[#1e1d1d] dark:text-white">
             <Suspense fallback={<div>Loading...</div>}>
               <Routes>
                 <Route path="/dashboard" element={<Dashboard />} />

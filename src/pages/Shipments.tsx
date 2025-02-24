@@ -124,7 +124,7 @@ function Shipments() {
       </div>
 
       {/* Shipment Table */}
-      <div className="bg-white p-4 rounded-lg shadow relative">
+      <div className="bg-white dark:bg-[#1a1a1a] p-4 rounded-lg shadow relative">
         <h2 className="text-lg font-semibold mb-4">Recent Shipments</h2>
 
         <div className="relative">
@@ -133,7 +133,7 @@ function Shipments() {
             ref={tableRef}
           >
             <table className="w-full text-left border-collapse">
-              <thead className="sticky top-0 bg-white shadow-md">
+              <thead className="sticky top-0 bg-white shadow-md dark:bg-[#1a1a1a]">
                 <tr className="border-b">
                   <th className="p-3">ID</th>
                   <th className="p-3">Order</th>
@@ -145,7 +145,7 @@ function Shipments() {
                 {filteredShipments.map((shipment) => (
                   <tr
                     key={shipment.id}
-                    className="border-b hover:bg-gray-100 cursor-pointer"
+                    className="border-b hover:bg-gray-100 cursor-pointer dark:hover:text-[#1a1a1a]"
                     onClick={() => openShipmentDetails(shipment)}
                   >
                     <td className="p-3">{shipment.id}</td>
