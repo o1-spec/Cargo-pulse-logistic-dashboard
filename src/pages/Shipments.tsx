@@ -1,86 +1,70 @@
+import { useState, useRef, useMemo } from "react";
 import {
-  useState,
-  useEffect,
-  useRef,
-  SetStateAction,
-  useCallback,
-} from "react";
-import { motion, useAnimation } from "framer-motion";
-import { Truck, PackageCheck, RefreshCw, Ban, Search, X } from "lucide-react";
-import shipmentDataRaw from "../data/shipments.json";
+  Truck,
+  PackageCheck,
+  RefreshCw,
+  Ban,
+  Search,
+  X,
+  Clock,
+} from "lucide-react";
+import { useShipmentContext } from "../context/useShipmentContext"; // ✅ Fetch shipments from context
 import Shipment from "../components/Shipment";
-import { ShipmentType } from "../types/ShipmentType";
 import getStatusColor from "../utils/StatusColor";
+import { ShipmentType } from "../types/ShipmentType";
 
 function Shipments() {
-  const [shipments, setShipments] = useState<ShipmentType[]>([]);
+  const { shipments } = useShipmentContext(); // ✅ Fetch shipments from context
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [filterLocation, setFilterLocation] = useState("All");
   const [selectedShipment, setSelectedShipment] = useState<ShipmentType | null>(
     null
   );
-  const shipmentData: ShipmentType[] = shipmentDataRaw as ShipmentType[];
-  const controls = useAnimation();
   const tableRef = useRef<HTMLDivElement>(null);
-  let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-  const startAnimation = useCallback(() => {
-    controls.start({
-      y: ["0%", "-100%"],
-      transition: { repeat: Infinity, duration: 40, ease: "linear" },
-    });
-  }, [controls]);
-
-  useEffect(() => {
-    setShipments(shipmentData);
-    startAnimation();
-  }, [shipmentData, startAnimation]);
-
-  const handleScroll = () => {
-    if (timeoutId) clearTimeout(timeoutId);
-    controls.stop();
-    timeoutId = setTimeout(() => {
-      startAnimation();
-    }, 3000);
-  };
-
-  const openShipmentDetails = (
-    shipment: SetStateAction<ShipmentType | null>
-  ) => {
+  const openShipmentDetails = (shipment: ShipmentType) => {
     setSelectedShipment(shipment);
-    controls.stop(); // Pause animation
   };
 
-  // Close shipment details modal with animation
   const closeShipmentDetails = () => {
     setSelectedShipment(null);
-    startAnimation(); // Resume animation
   };
 
-  const filteredShipments = shipments.filter((shipment) => {
-    const matchesSearch = shipment.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      filterStatus === "All" || shipment.status === filterStatus;
-    const matchesLocation =
-      filterLocation === "All" || shipment.location === filterLocation;
-    return matchesSearch && matchesStatus && matchesLocation;
-  });
+  // Filter shipments based on search, status, and location
+  const filteredShipments = useMemo(() => {
+    return shipments.filter((shipment) => {
+      const matchesSearch =
+        shipment.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        false;
+      const matchesStatus =
+        filterStatus === "All" || shipment.status === filterStatus;
+      const matchesLocation =
+        filterLocation === "All" || shipment.location === filterLocation;
+      return matchesSearch && matchesStatus && matchesLocation;
+    });
+  }, [shipments, searchQuery, filterStatus, filterLocation]);
 
-  const uniqueLocations = ["All", ...new Set(shipments.map((s) => s.location))];
+  const uniqueLocations = useMemo(() => {
+    return ["All", ...new Set(shipments.map((s) => s.location))];
+  }, [shipments]);
 
   return (
     <div className="px-6 py-4 w-full min-h-screen relative">
-      <h1 className="text-2xl font-semibold mb-6">Shipments</h1>
+      <h1 className="text-2xl font-semibold mb-6">Shipments Overview</h1>
 
       {/* Shipment Stats */}
-      <div className="grid grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-5 gap-4 mb-8">
         <Shipment
           icon={<Truck />}
           label="Total Shipments"
           value={shipments.length}
+          bgColor="bg-blue-500"
+        />
+        <Shipment
+          icon={<Clock />}
+          label="Pending"
+          value={shipments.filter((s) => s.status === "Pending").length}
           bgColor="bg-blue-500"
         />
         <Shipment
@@ -139,32 +123,28 @@ function Shipments() {
         </select>
       </div>
 
-      {/* Infinite Scrolling Shipment Table */}
-      <div className="bg-white p-4 rounded-lg shadow overflow-hidden h-[300px] relative">
+      {/* Shipment Table */}
+      <div className="bg-white p-4 rounded-lg shadow relative">
         <h2 className="text-lg font-semibold mb-4">Recent Shipments</h2>
 
-        <div
-          className="overflow-hidden h-[250px]"
-          ref={tableRef}
-          onScroll={handleScroll}
-        >
-          <motion.table
-            className="w-full text-left border-collapse"
-            animate={controls}
+        <div className="relative">
+          <div
+            className="max-h-[250px] overflow-y-auto no-scrollbar"
+            ref={tableRef}
           >
-            <thead>
-              <tr className="border-b">
-                <th className="p-3">ID</th>
-                <th className="p-3">Order</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Location</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...filteredShipments, ...filteredShipments].map(
-                (shipment, index) => (
+            <table className="w-full text-left border-collapse">
+              <thead className="sticky top-0 bg-white shadow-md">
+                <tr className="border-b">
+                  <th className="p-3">ID</th>
+                  <th className="p-3">Order</th>
+                  <th className="p-3">Status</th>
+                  <th className="p-3">Location</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredShipments.map((shipment) => (
                   <tr
-                    key={index}
+                    key={shipment.id}
                     className="border-b hover:bg-gray-100 cursor-pointer"
                     onClick={() => openShipmentDetails(shipment)}
                   >
@@ -179,28 +159,17 @@ function Shipments() {
                     </td>
                     <td className="p-3">{shipment.location}</td>
                   </tr>
-                )
-              )}
-            </tbody>
-          </motion.table>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      {/* Shipment Details Modal with Animation */}
+      {/* Shipment Details Modal */}
       {selectedShipment && (
-        <motion.div
-          className="fixed inset-0 flex items-center justify-center backdrop-blur-md bg-white/30 z-50"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <motion.div
-            className="bg-white p-6 rounded-lg shadow-lg w-96 text-center relative"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+        <div className="fixed inset-0 flex items-center justify-center backdrop-blur-md bg-white/30 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center relative">
             <button
               className="absolute top-2 right-2 cursor-pointer"
               onClick={closeShipmentDetails}
@@ -225,13 +194,11 @@ function Shipments() {
             >
               Close
             </button>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
     </div>
   );
 }
-
-// Status Color Helper
 
 export default Shipments;

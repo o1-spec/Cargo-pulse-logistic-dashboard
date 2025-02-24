@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
-import io from "socket.io-client";
-import { motion } from "framer-motion";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { Truck, RefreshCw, CheckCircle, XCircle } from "lucide-react";
+import { Truck, RefreshCw, CheckCircle, XCircle, Clock } from "lucide-react";
 import Shipment from "../components/Shipment";
+import { useShipmentContext } from "../context/useShipmentContext";
 import { ShipmentType } from "../types/ShipmentType";
 import L from "leaflet";
+import toast from "react-hot-toast";
+import socket from "../utils/sockets";
 
-const socket = io("http://localhost:5000");
-
-// Custom marker icon
+// Custom marker icon for shipments
 const shipmentIcon = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
   iconSize: [30, 30],
@@ -29,29 +28,37 @@ const statusColors: Record<
 };
 
 function RealTime() {
-  const [shipments, setShipments] = useState<ShipmentType[]>([]);
+  const { shipments, updateShipmentStatus, removeCompletedShipment } =
+    useShipmentContext(); // ✅ Context API
   const [selectedShipment, setSelectedShipment] = useState<ShipmentType | null>(
     null
   );
   const [selectedStatus, setSelectedStatus] = useState<string>("All");
 
   useEffect(() => {
-    socket.on("shipmentUpdate", (newShipment) => {
-      setShipments((prevShipments) => [
-        { ...newShipment, lat: getRandomLat(), lon: getRandomLon() },
-        ...prevShipments.slice(0, 19), // Keep latest 20 updates
-      ]);
-    });
+    const handleStatusUpdate = (updatedShipment: ShipmentType) => {
+      toast.success(
+        `🚛 ${updatedShipment.name} is now ${updatedShipment.status}`
+      );
+      updateShipmentStatus(updatedShipment.id, updatedShipment.status);
+    };
+
+    const handleShipmentCompleted = (completedShipment: ShipmentType) => {
+      toast.success(`✅ ${completedShipment.name} has been completed`);
+      removeCompletedShipment(completedShipment.id);
+    };
+
+    // Listen for shipment updates
+    socket.on("statusUpdate", handleStatusUpdate);
+    socket.on("shipmentCompleted", handleShipmentCompleted);
 
     return () => {
-      socket.off("shipmentUpdate");
+      socket.off("statusUpdate", handleStatusUpdate);
+      socket.off("shipmentCompleted", handleShipmentCompleted);
     };
-  }, []);
+  }, [updateShipmentStatus, removeCompletedShipment]);
 
-  // Simulating random coordinates for demonstration
-  const getRandomLat = () => 25 + Math.random() * 20;
-  const getRandomLon = () => -120 + Math.random() * 20;
-
+  // Filter shipments based on status selection
   const filteredShipments =
     selectedStatus === "All"
       ? shipments
@@ -67,7 +74,9 @@ function RealTime() {
           <button
             key={status}
             onClick={() => setSelectedStatus(status)}
-            className={`px-4 py-2 rounded-lg font-semibold ${statusColors[status]} hover:opacity-80 transition cursor-pointer`}
+            className={`px-4 py-2 rounded-lg font-semibold ${
+              statusColors[status as keyof typeof statusColors]
+            } hover:opacity-80 transition cursor-pointer`}
           >
             {status}
           </button>
@@ -81,11 +90,17 @@ function RealTime() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-5 gap-4 mb-8">
         <Shipment
           icon={<Truck />}
           label="Total Shipments"
           value={shipments.length}
+          bgColor="bg-blue-500"
+        />
+        <Shipment
+          icon={<Clock />}
+          label="Pending"
+          value={shipments.filter((s) => s.status === "Pending").length}
           bgColor="bg-blue-500"
         />
         <Shipment
@@ -112,44 +127,45 @@ function RealTime() {
       <div className="bg-white p-4 rounded-lg shadow-lg mb-8">
         <h2 className="text-lg font-semibold mb-4">Live Shipment Updates</h2>
 
-        <div className="overflow-hidden h-[400px]">
-          <motion.table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b bg-gray-50">
-                <th className="p-3">ID</th>
-                <th className="p-3">Order</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Location</th>
-                <th className="p-3">Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredShipments.map((shipment, index) => (
-                <motion.tr
-                  key={shipment.id + index}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="border-b hover:bg-gray-100 cursor-pointer"
-                  onClick={() => setSelectedShipment(shipment)}
-                >
-                  <td className="p-3">{shipment.id}</td>
-                  <td className="p-3">{shipment.name}</td>
-                  <td
-                    className={`p-3 font-semibold rounded ${
-                      statusColors[shipment.status]
-                    }`}
+        <div className="relative">
+          <div className="max-h-[400px] overflow-y-auto no-scrollbar">
+            <table className="w-full text-left border-collapse">
+              <thead className="sticky top-0 bg-white shadow-md">
+                <tr className="border-b bg-gray-50">
+                  <th className="p-3">ID</th>
+                  <th className="p-3">Order</th>
+                  <th className="p-3">Status</th>
+                  <th className="p-3">Location</th>
+                  <th className="p-3">Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredShipments.map((shipment) => (
+                  <tr
+                    key={shipment.id}
+                    className="border-b hover:bg-gray-100 cursor-pointer"
+                    onClick={() => setSelectedShipment(shipment)}
                   >
-                    {shipment.status}
-                  </td>
-                  <td className="p-3">{shipment.location}</td>
-                  <td className="p-3 text-gray-500 text-sm">
-                    {new Date(shipment.timestamp).toLocaleTimeString()}
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </motion.table>
+                    <td className="p-3">{shipment.id}</td>
+                    <td className="p-3">{shipment.name}</td>
+                    <td
+                      className={`p-3 font-semibold rounded ${
+                        statusColors[shipment.status]
+                      }`}
+                    >
+                      {shipment.status}
+                    </td>
+                    <td className="p-3">{shipment.location}</td>
+                    <td className="p-3 text-gray-500 text-sm">
+                      {shipment.timestamp
+                        ? new Date(shipment.timestamp).toLocaleTimeString()
+                        : "N/A"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 

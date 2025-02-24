@@ -4,9 +4,12 @@ const io = new Server(5000, {
   cors: { origin: "*" },
 });
 
-console.log("WebSocket server running on port 5000");
+console.log("🚀 WebSocket server running on port 5000");
 
+// Shipment statuses
 const statuses = ["Pending", "In Transit", "Delivered", "Completed"];
+
+// Locations with coordinates
 const locations = [
   { name: "New York", lat: 40.7128, lon: -74.006 },
   { name: "Lagos", lat: 6.5244, lon: 3.3792 },
@@ -21,12 +24,13 @@ const locations = [
 
 let activeShipments = [];
 
+// Function to generate a new shipment
 function generateNewShipment() {
   const randomLocation =
     locations[Math.floor(Math.random() * locations.length)];
   const newShipment = {
-    id: Math.floor(Math.random() * 1000).toString(),
-    name: `Order #${Math.floor(Math.random() * 9999)}`,
+    id: Math.floor(1000 + Math.random() * 9000).toString(), // Ensure 4-digit ID
+    name: `Order #${Math.floor(1000 + Math.random() * 9000)}`, // Order #1000 - 9999
     status: "Pending",
     location: randomLocation.name,
     lat: randomLocation.lat,
@@ -35,48 +39,58 @@ function generateNewShipment() {
   };
 
   if (activeShipments.length >= 10) {
-    activeShipments.shift();
+    activeShipments.shift(); // Remove oldest shipment if >10
   }
   activeShipments.push(newShipment);
 
-  return newShipment;
+  io.emit("shipmentUpdate", newShipment);
+  console.log(
+    `📦 New Shipment: ${newShipment.name} at ${newShipment.location}`
+  );
 }
 
+// Function to update shipment statuses
 function updateShipmentStatus() {
-  activeShipments.forEach((shipment, index) => {
-    const prevStatus = shipment.status;
+  activeShipments = activeShipments
+    .map((shipment) => {
+      if (shipment.status === "Pending") {
+        shipment.status = "In Transit";
+      } else if (shipment.status === "In Transit") {
+        shipment.status = "Delivered";
+      } else if (shipment.status === "Delivered") {
+        shipment.status = "Completed";
+        io.emit("shipmentCompleted", shipment); // Notify clients of completion
+        console.log(`✅ Shipment Completed: ${shipment.name}`);
+        return null; // Mark for removal
+      }
 
-    if (shipment.status === "Pending") {
-      shipment.status = "In Transit";
-    } else if (shipment.status === "In Transit") {
-      shipment.status = "Delivered";
-    } else if (shipment.status === "Delivered") {
-      shipment.status = "Completed";
-      io.emit("shipmentCompleted", shipment);
-      activeShipments.splice(index, 1);
-      return;
-    }
-
-    if (prevStatus !== shipment.status) {
       io.emit("statusUpdate", shipment);
-    }
-  });
-
-  io.emit("shipmentUpdate", activeShipments);
+      console.log(`🚛 Status Update: ${shipment.name} → ${shipment.status}`);
+      return shipment;
+    })
+    .filter(Boolean); // Remove completed shipments
 }
 
 // Send a new shipment every 2 minutes
-setInterval(() => {
-  const newShipment = generateNewShipment();
-  io.emit("shipmentUpdate", activeShipments);
-}, 120000);
+setInterval(generateNewShipment, 120000);
 
 // Update shipment statuses every 5 minutes
-setInterval(() => {
-  updateShipmentStatus();
-}, 300000);
+setInterval(updateShipmentStatus, 300000);
 
+// WebSocket connection handler
 io.on("connection", (socket) => {
-  console.log("Client connected");
-  socket.emit("shipmentUpdate", activeShipments);
+  console.log("🟢 Client connected:", socket.id);
+
+  // Send existing shipments immediately
+  if (activeShipments.length > 0) {
+    socket.emit("shipmentUpdate", activeShipments);
+  } else {
+    // If no shipments exist, generate one immediately
+    generateNewShipment();
+  }
+
+  // Handle client disconnect
+  socket.on("disconnect", () => {
+    console.log("🔴 Client disconnected:", socket.id);
+  });
 });
