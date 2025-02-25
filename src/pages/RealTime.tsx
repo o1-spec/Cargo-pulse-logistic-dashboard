@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { Truck, RefreshCw, CheckCircle, XCircle, Clock } from "lucide-react";
-import Shipment from "../components/Shipment";
 import { useShipmentContext } from "../context/useShipmentContext";
 import { ShipmentType } from "../types/ShipmentType";
 import L from "leaflet";
 import toast from "react-hot-toast";
 import socket from "../utils/sockets";
 import getStatusColor from "../utils/StatusColor";
+import ShipmentStats from "../components/ShipmentStats";
 
 // Custom marker icon for shipments
 const shipmentIcon = new L.Icon({
@@ -91,38 +90,7 @@ function RealTime() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-5 gap-4 mb-8">
-        <Shipment
-          icon={<Truck />}
-          label="Total Shipments"
-          value={shipments.length}
-          bgColor="bg-blue-500"
-        />
-        <Shipment
-          icon={<Clock />}
-          label="Pending"
-          value={shipments.filter((s) => s.status === "Pending").length}
-          bgColor="bg-blue-500"
-        />
-        <Shipment
-          icon={<CheckCircle />}
-          label="Delivered"
-          value={shipments.filter((s) => s.status === "Delivered").length}
-          bgColor="bg-green-500"
-        />
-        <Shipment
-          icon={<RefreshCw />}
-          label="In Transit"
-          value={shipments.filter((s) => s.status === "In Transit").length}
-          bgColor="bg-yellow-500"
-        />
-        <Shipment
-          icon={<XCircle />}
-          label="Cancelled"
-          value={shipments.filter((s) => s.status === "Cancelled").length}
-          bgColor="bg-red-500"
-        />
-      </div>
+      <ShipmentStats />
 
       {/* Real-Time Table */}
       <div className="bg-white dark:bg-[#1a1a1a] p-4 rounded-lg shadow-lg mb-8">
