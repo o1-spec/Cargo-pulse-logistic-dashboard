@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ShipmentStatus, ShipmentType } from "../types/ShipmentType";
 import toast from "react-hot-toast";
 import socket from "../utils/sockets";
@@ -25,53 +25,95 @@ export const ShipmentProvider: React.FC<{ children: React.ReactNode }> = ({
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     localStorage.getItem("notifications") !== "false"
   );
-  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [unreadNotifications, setUnreadNotifications] = useState(
+    Number(localStorage.getItem("unreadNotifications")) || 0
+  );
   const [notifications, setNotifications] = useState<
     { id: string; message: string; status: ShipmentStatus }[]
-  >([]);
+  >(() => {
+    try {
+      const storedNotifications = localStorage.getItem("notificationsList");
+      return storedNotifications ? JSON.parse(storedNotifications) : [];
+    } catch (error) {
+      console.error("Error loading notifications from localStorage:", error);
+      return [];
+    }
+  });
 
   const saveShipments = (updatedShipments: ShipmentType[]) => {
     localStorage.setItem("shipments", JSON.stringify(updatedShipments));
   };
 
-  const addShipment = (shipment: ShipmentType) => {
+  const saveNotifications = (
+    updatedNotifications: {
+      id: string;
+      message: string;
+      status: ShipmentStatus;
+    }[]
+  ) => {
+    localStorage.setItem(
+      "notificationsList",
+      JSON.stringify(updatedNotifications)
+    );
+  };
+
+  const saveUnreadNotifications = (count: number) => {
+    localStorage.setItem("unreadNotifications", count.toString());
+  };
+
+  const addShipment = useCallback((shipment: ShipmentType) => {
     setShipments((prev) => {
       if (prev.some((s) => s.id === shipment.id)) return prev;
       const updatedShipments = [...prev, shipment];
       saveShipments(updatedShipments);
       return updatedShipments;
     });
-  };
+  }, []);
 
-  const updateShipmentStatus = (id: string, newStatus: ShipmentStatus) => {
-    setShipments((prev) => {
-      const updatedShipments = prev.map((shipment) =>
-        shipment.id === id
-          ? {
-              ...shipment,
-              status: newStatus,
-              timestamp: new Date().toISOString(),
-            }
-          : shipment
-      );
-      saveShipments(updatedShipments);
-      return updatedShipments;
-    });
+  const updateShipmentStatus = useCallback(
+    (id: string, newStatus: ShipmentStatus) => {
+      setShipments((prev) => {
+        const updatedShipments = prev.map((shipment) =>
+          shipment.id === id
+            ? {
+                ...shipment,
+                status: newStatus,
+                timestamp: new Date().toISOString(),
+              }
+            : shipment
+        );
+        saveShipments(updatedShipments);
+        return updatedShipments;
+      });
 
-    if (notificationsEnabled) {
-      setUnreadNotifications((prev) => prev + 1);
-      const message = `🚛 Shipment #${id} moved to ${newStatus}`;
-      setNotifications((prev) => [
-        { id, message, status: newStatus },
-        ...prev, // Keep previous notifications
-      ]);
-      toast.success(message);
-    }
-  };
+      if (notificationsEnabled) {
+        const newNotification = {
+          id,
+          message: `🚛 Shipment #${id} moved to ${newStatus}`,
+          status: newStatus,
+        };
 
-  const removeCompletedShipment = (id: string) => {
+        setUnreadNotifications((prev) => {
+          const updatedCount = prev + 1;
+          saveUnreadNotifications(updatedCount);
+          return updatedCount;
+        });
+
+        setNotifications((prev) => {
+          const updatedNotifications = [newNotification, ...prev];
+          saveNotifications(updatedNotifications);
+          return updatedNotifications;
+        });
+
+        toast.success(newNotification.message);
+      }
+    },
+    [notificationsEnabled]
+  );
+
+  const removeCompletedShipment = useCallback((id: string) => {
     setShipments((prev) => prev.filter((shipment) => shipment.id !== id));
-  };
+  }, []);
 
   const toggleDarkMode = () => {
     setDarkMode((prev) => {
@@ -117,7 +159,7 @@ export const ShipmentProvider: React.FC<{ children: React.ReactNode }> = ({
       socket.off("statusUpdate", handleStatusUpdate);
       socket.off("shipmentCompleted", handleShipmentCompleted);
     };
-  }, []);
+  }, [addShipment, updateShipmentStatus, removeCompletedShipment]);
 
   return (
     <ShipmentContext.Provider
