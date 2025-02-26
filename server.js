@@ -29,8 +29,8 @@ function generateNewShipment() {
   const randomLocation =
     locations[Math.floor(Math.random() * locations.length)];
   const newShipment = {
-    id: Math.floor(1000 + Math.random() * 9000).toString(), // Ensure 4-digit ID
-    name: `Order #${Math.floor(1000 + Math.random() * 9000)}`, // Order #1000 - 9999
+    id: Math.floor(1000 + Math.random() * 9000).toString(),
+    name: `Order #${Math.floor(1000 + Math.random() * 9000)}`,
     status: "Pending",
     location: randomLocation.name,
     lat: randomLocation.lat,
@@ -39,7 +39,7 @@ function generateNewShipment() {
   };
 
   if (activeShipments.length >= 10) {
-    activeShipments.shift(); // Remove oldest shipment if >10
+    activeShipments.shift();
   }
   activeShipments.push(newShipment);
 
@@ -59,16 +59,16 @@ function updateShipmentStatus() {
         shipment.status = "Delivered";
       } else if (shipment.status === "Delivered") {
         shipment.status = "Completed";
-        io.emit("shipmentCompleted", shipment); // Notify clients of completion
+        io.emit("shipmentCompleted", shipment);
         console.log(`✅ Shipment Completed: ${shipment.name}`);
-        return null; // Mark for removal
+        return null;
       }
 
       io.emit("statusUpdate", shipment);
       console.log(`🚛 Status Update: ${shipment.name} → ${shipment.status}`);
       return shipment;
     })
-    .filter(Boolean); // Remove completed shipments
+    .filter(Boolean);
 }
 
 // Send a new shipment every 2 minutes
@@ -81,15 +81,12 @@ setInterval(updateShipmentStatus, 300000);
 io.on("connection", (socket) => {
   console.log("🟢 Client connected:", socket.id);
 
-  // Send existing shipments immediately
   if (activeShipments.length > 0) {
     socket.emit("shipmentUpdate", activeShipments);
   } else {
-    // If no shipments exist, generate one immediately
     generateNewShipment();
   }
 
-  // Handle client disconnect
   socket.on("disconnect", () => {
     console.log("🔴 Client disconnected:", socket.id);
   });

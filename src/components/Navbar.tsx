@@ -1,4 +1,4 @@
-import { Moon, User, Sun, Bell } from "lucide-react";
+import { Moon, Sun, Bell, Truck } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useShipmentContext } from "../context/useShipmentContext";
 
@@ -98,8 +98,7 @@ function Navbar() {
             </div>
           )}
         </div>
-
-        <User className="w-5 h-5 text-gray-600 dark:text-gray-300 cursor-pointer" />
+        <Truck className="w-8 h-8 rounded-full text-white bg-[#40c057] px-1.5" />
       </div>
     </div>
   );

@@ -23,10 +23,10 @@ function Dashboard() {
     <div className="p-6 w-full min-h-screen">
       <h1 className="text-2xl font-semibold mb-6">Dashboard</h1>
 
-      {/* 🚛 Shipment Stats Overview */}
+      {/* Shipment Stats Overview */}
       <ShipmentStats />
 
-      {/* 📊 Shipment Analytics */}
+      {/*  Shipment Analytics */}
       <ShipmentAnalytics />
 
       {/* 📦 Recent Shipments */}
