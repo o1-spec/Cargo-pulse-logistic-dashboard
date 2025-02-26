@@ -5,15 +5,19 @@ import { useShipmentContext } from "../context/useShipmentContext";
 import "chart.js/auto";
 
 function ShipmentAnalytics() {
-  const { shipments } = useShipmentContext();
+  const { shipments, realTimeShipments } = useShipmentContext();
 
-  const pending = shipments.filter((s) => s.status === "Pending").length;
-  const inTransit = shipments.filter((s) => s.status === "In Transit").length;
-  const delivered = shipments.filter((s) => s.status === "Delivered").length;
-  const cancelled = shipments.filter((s) => s.status === "Cancelled").length;
+  const allShipments = [...shipments, ...realTimeShipments];
+
+  const pending = allShipments.filter((s) => s.status === "Pending").length;
+  const inTransit = allShipments.filter(
+    (s) => s.status === "In Transit"
+  ).length;
+  const delivered = allShipments.filter((s) => s.status === "Delivered").length;
+  const cancelled = allShipments.filter((s) => s.status === "Cancelled").length;
 
   const shipmentsPerMonth = Array(12).fill(0);
-  shipments.forEach((shipment) => {
+  allShipments.forEach((shipment) => {
     if (shipment.timestamp) {
       const monthIndex = new Date(shipment.timestamp).getMonth();
       shipmentsPerMonth[monthIndex]++;
@@ -60,7 +64,7 @@ function ShipmentAnalytics() {
     ],
   };
 
-  const shipmentsByLocation = shipments.reduce<Record<string, number>>(
+  const shipmentsByLocation = allShipments.reduce<Record<string, number>>(
     (acc, shipment) => {
       acc[shipment.location] = (acc[shipment.location] || 0) + 1;
       return acc;

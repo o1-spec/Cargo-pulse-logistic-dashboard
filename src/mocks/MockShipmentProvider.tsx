@@ -4,7 +4,7 @@ import {
   ShipmentContext,
   ShipmentContextType,
 } from "../context/ShipmentContext";
-import { mockShipments } from "./MockShipments";
+import { mockShipments } from "./mockShipments";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const mockContextValue: ShipmentContextType = {
@@ -19,6 +19,7 @@ export const mockContextValue: ShipmentContextType = {
   unreadNotifications: 0,
   setUnreadNotifications: vi.fn(),
   notifications: [],
+  realTimeShipments: mockShipments,
 };
 
 export const MockShipmentProvider = ({ children }: { children: ReactNode }) => (

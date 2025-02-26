@@ -1,9 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import Dashboard from "../pages/Dashboard";
 import { MockShipmentProvider } from "../mocks/MockShipmentProvider";
 
-test("renders Dashboard components", () => {
+test("renders Dashboard components", async () => {
   render(
     <MockShipmentProvider>
       <MemoryRouter>
@@ -12,7 +12,9 @@ test("renders Dashboard components", () => {
     </MockShipmentProvider>
   );
 
-  expect(screen.getByText(/Dashboard/i)).toBeInTheDocument();
-  expect(screen.getByText(/Total Shipments/i)).toBeInTheDocument();
-  expect(screen.getByText(/Recent Shipments/i)).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText(/Dashboard/i)).toBeInTheDocument();
+    expect(screen.getByText(/Total Shipments/i)).toBeInTheDocument();
+    expect(screen.getByText(/Recent Shipments/i)).toBeInTheDocument();
+  });
 });
