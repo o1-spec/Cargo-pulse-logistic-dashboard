@@ -64,6 +64,12 @@ npm run dev
 - View **Notifications** for real-time shipment updates.
 
 ---
+## 🧪 Running Tests
 
+To run the test suite, use the following command:
+
+```sh
+npm test
+```
 This logistics dashboard provides an **intuitive, real-time tracking experience** with **automated updates, interactive charts, and a seamless user interface**. 🚛📦
 
