@@ -3,6 +3,7 @@ import { lazy, Suspense } from "react";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
+import Loading from "./components/Loading";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Shipments = lazy(() => import("./pages/Shipments"));
@@ -20,9 +21,9 @@ function App() {
         <div className="basis-[82%]">
           <Navbar />
           <div className="mt-[60px] rounded-t-2xl dark:bg-[#1e1d1d] dark:text-white">
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Loading />}>
               <Routes>
-                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/" element={<Dashboard />} />
                 <Route path="/shipments" element={<Shipments />} />
                 <Route path="/real-time" element={<RealTime />} />
                 <Route path="/settings" element={<Settings />} />

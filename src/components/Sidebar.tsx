@@ -23,9 +23,9 @@ function Sidebar() {
       </div>
       <div className="flex flex-col gap-4">
         <Link
-          to="/dashboard"
+          to="/"
           className={`flex items-center gap-3 rounded-xl py-2 px-3 ${isActive(
-            "/dashboard"
+            "/"
           )}`}
         >
           <LayoutDashboard className="w-4 h-4" />
