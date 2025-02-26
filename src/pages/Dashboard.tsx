@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ShipmentType } from "../types/ShipmentType";
 import ShipmentStats from "../components/ShipmentStats";
-import ShipmentDetailsModal from "../components/ShipmentDetailsModel";
+import ShipmentDetailsModal from "../components/ShipmentDetailsModal";
 import ShipmentAnalytics from "../components/ShipmentAnalytics";
 import QuickNavigation from "../components/QuickNavigation";
 import RecentShipments from "../components/RecentShipments";

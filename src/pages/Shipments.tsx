@@ -3,7 +3,7 @@ import { useShipmentContext } from "../context/useShipmentContext";
 import { ShipmentType } from "../types/ShipmentType";
 import ShipmentStats from "../components/ShipmentStats";
 import ShipmentTable from "../components/ShipmentTable";
-import ShipmentDetailsModal from "../components/ShipmentDetailsModel";
+import ShipmentDetailsModal from "../components/ShipmentDetailsModal";
 import ShipmentFilters from "../components/ShipmentFilters";
 
 function Shipments() {

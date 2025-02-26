@@ -90,9 +90,19 @@ function ShipmentAnalytics() {
         transition={{ duration: 0.7 }}
       >
         <h2 className="text-lg font-semibold mb-2 flex items-center gap-2">
-          <BarChart3 className="w-5 h-5 text-blue-500" /> Shipment Trends
+          <BarChart3
+            className="w-5 h-5 text-blue-500"
+            role="img"
+            aria-label="Shipment Trends Icon"
+          />
+          Shipment Trends
         </h2>
-        <Line data={shipmentTrendData} />
+        <Line
+          data={shipmentTrendData}
+          data-testid="line-chart"
+          role="img"
+          aria-label="Shipment Trends Line Chart"
+        />
       </motion.div>
 
       {/* 📊 Status Distribution */}
@@ -103,9 +113,19 @@ function ShipmentAnalytics() {
         transition={{ duration: 0.8 }}
       >
         <h2 className="text-lg font-semibold mb-2 flex items-center gap-2">
-          <CheckCircle className="w-5 h-5 text-green-500" /> Status Distribution
+          <CheckCircle
+            className="w-5 h-5 text-green-500"
+            role="img"
+            aria-label="Status Distribution Icon"
+          />
+          Status Distribution
         </h2>
-        <Pie data={statusDistribution} />
+        <Pie
+          data={statusDistribution}
+          data-testid="pie-chart"
+          role="img"
+          aria-label="Status Distribution Pie Chart"
+        />
       </motion.div>
 
       {/* 🗺️ Shipments Per Location (Live Data) */}
@@ -116,9 +136,19 @@ function ShipmentAnalytics() {
         transition={{ duration: 0.9 }}
       >
         <h2 className="text-lg font-semibold mb-2 flex items-center gap-2">
-          <MapPin className="w-5 h-5 text-yellow-500" /> Shipments Per Location
+          <MapPin
+            className="w-5 h-5 text-yellow-500"
+            role="img"
+            aria-label="Shipments Per Location Icon"
+          />
+          Shipments Per Location
         </h2>
-        <Bar data={locationData} />
+        <Bar
+          data={locationData}
+          data-testid="bar-chart"
+          role="img"
+          aria-label="Shipments Per Location Bar Chart"
+        />
       </motion.div>
     </div>
   );
