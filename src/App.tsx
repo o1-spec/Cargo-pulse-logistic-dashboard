@@ -35,6 +35,9 @@ function App() {
   return (
     <Router>
       <Toaster position="top-right" reverseOrder={false} />
+      {/* <button className="bg-green-500 font-semibold text-xl rounded-xl py-3 px-4 text-white">
+        Start
+      </button> */}
       <div className="xl:flex">
         <div ref={sidebarRef} className="basis-[18%] h-full">
           <Sidebar

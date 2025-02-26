@@ -23,7 +23,6 @@ Follow these steps to set up and run the project locally:
 git clone https://github.com/your-repo/logistics-dashboard.git
 cd logistics-dashboard
 npm install
-node server.js
 npm run dev
 ```
 
@@ -71,6 +70,7 @@ npm run dev
 
 - Toggle **Dark Mode / Light Mode**.
 - View **Notifications** for real-time shipment updates.
+  I added a server.js file which shows my websockets code but my server has been uploaded on render and the link can be found in the socket.tsx file inside the utils folder
 
 ---
 
