@@ -20,7 +20,7 @@ function Dashboard() {
   };
 
   return (
-    <div className="p-6 w-full min-h-screen">
+    <div className="py-6 sm:px-6 px-2 w-full min-h-screen">
       <h1 className="text-2xl font-semibold mb-6">Dashboard</h1>
 
       {/* Shipment Stats Overview */}

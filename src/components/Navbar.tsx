@@ -1,8 +1,12 @@
-import { Moon, Sun, Bell, Truck } from "lucide-react";
+import { Moon, Sun, Bell, Truck, Menu } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useShipmentContext } from "../context/useShipmentContext";
 
-function Navbar() {
+interface NavbarInterface {
+  toggleSidebar: () => void;
+}
+
+function Navbar({ toggleSidebar }: NavbarInterface) {
   const {
     darkMode,
     toggleDarkMode,
@@ -49,20 +53,25 @@ function Navbar() {
   };
 
   return (
-    <div className="flex items-center gap-10 py-4 px-8 bg-[#f7f7f7] dark:bg-[#1a1a1a] fixed top-0 left-[17%] right-0 z-50">
-      <div className="relative basis-[85%]">
-        <h3 className="font-semibold text-green-500 text-2xl">Overview</h3>
+    <div className="flex items-center md:gap-10 gap-4 py-4 sm:py-5 px-2 md:px-8 bg-[#f7f7f7] dark:bg-[#1a1a1a] fixed top-0 xl:left-[17%] left-0 right-0 z-50">
+      <div className="relative basis-[85%] flex items-center gap-1 sm:gap-4">
+        <button onClick={toggleSidebar} className="xl:hidden cursor-pointer">
+          <Menu className="w-6 h-6 dark:text-white" />
+        </button>
+        <h3 className="font-semibold text-green-500 text-[22px] sm:text-2xl">
+          Dashboard Overview
+        </h3>
       </div>
 
-      <div className="flex items-center gap-8 basis-[15%]">
+      <div className="flex items-center gap-2 md:gap-8 basis-[15%]">
         <button
           onClick={toggleDarkMode}
           className="p-2 rounded-full border cursor-pointer"
         >
           {darkMode ? (
-            <Sun className="w-5 h-5 text-yellow-500" />
+            <Sun className="w-4 h-4 md:w-5 md:h-5 text-yellow-500" />
           ) : (
-            <Moon className="w-5 h-5 text-gray-600" />
+            <Moon className="w-4 h-4 md:w-5 md:h-5 text-gray-600" />
           )}
         </button>
 
@@ -98,7 +107,7 @@ function Navbar() {
             </div>
           )}
         </div>
-        <Truck className="w-8 h-8 rounded-full text-white bg-[#40c057] px-1.5" />
+        <Truck className="w-8 h-8 hidden md:flex rounded-full text-white bg-[#40c057] px-1.5" />
       </div>
     </div>
   );

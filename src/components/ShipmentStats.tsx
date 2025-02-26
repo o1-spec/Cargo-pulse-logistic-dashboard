@@ -6,33 +6,33 @@ const ShipmentStats = () => {
   const { shipments } = useShipmentContext();
 
   return (
-    <div className="grid grid-cols-5 gap-4 mb-8">
+    <div className="grid grid-cols-3 xl:grid-cols-5 gap-3 md:gap-4 mb-8">
       <Shipment
-        icon={<Truck />}
+        icon={<Truck className="md:w-fit w-4" />}
         label="Total Shipments"
         value={shipments.length}
         bgColor="bg-blue-500"
       />
       <Shipment
-        icon={<Clock />}
+        icon={<Clock className="md:w-fit w-4" />}
         label="Pending"
         value={shipments.filter((s) => s.status === "Pending").length}
         bgColor="bg-blue-500"
       />
       <Shipment
-        icon={<PackageCheck />}
+        icon={<PackageCheck className="md:w-fit w-4" />}
         label="Delivered"
         value={shipments.filter((s) => s.status === "Delivered").length}
         bgColor="bg-green-500"
       />
       <Shipment
-        icon={<RefreshCw />}
+        icon={<RefreshCw className="md:w-fit w-4" />}
         label="In Transit"
         value={shipments.filter((s) => s.status === "In Transit").length}
         bgColor="bg-yellow-500"
       />
       <Shipment
-        icon={<Ban />}
+        icon={<Ban className="md:w-fit w-4" />}
         label="Cancelled"
         value={shipments.filter((s) => s.status === "Cancelled").length}
         bgColor="bg-red-500"

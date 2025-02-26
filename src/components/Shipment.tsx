@@ -4,13 +4,15 @@ import { motion } from "framer-motion";
 function Shipment({ icon, label, value, bgColor }: ShipmentTableTypes) {
   return (
     <motion.div
-      className={`flex items-center p-4 rounded-lg shadow ${bgColor} text-white`}
+      className={`flex items-start md:items-center py-4 md:p-4 px-2 rounded-lg flex-col md:flex-row shadow ${bgColor} text-white`}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="p-2 bg-white/20 rounded-full">{icon}</div>
-      <div className="ml-4">
+      <div className="py-1 px-2 md:p-2 mb-2 md:pb-0 bg-white/20 rounded-full">
+        {icon}
+      </div>
+      <div className="ml-2 md:ml-4">
         <p className="text-lg font-bold">{value}</p>
         <p className="text-sm">{label}</p>
       </div>

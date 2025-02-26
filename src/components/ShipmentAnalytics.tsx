@@ -85,7 +85,7 @@ function ShipmentAnalytics() {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-6 mb-8">
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
       {/* 📈 Shipment Trends (Live Data) */}
       <motion.div
         className="bg-white dark:bg-[#1a1a1a] p-4 rounded-lg shadow-md"

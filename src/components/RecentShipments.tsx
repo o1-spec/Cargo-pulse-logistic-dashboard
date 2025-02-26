@@ -37,16 +37,18 @@ function RecentShipments({ openShipmentDetails }: RecentShipmentsTypes) {
                 className="border-b hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer"
                 onClick={() => openShipmentDetails(shipment)}
               >
-                <td className="p-3">{shipment.id}</td>
-                <td className="p-3">{shipment.name}</td>
+                <td className="p-3 text-md md:text-[16px]">{shipment.id}</td>
+                <td className="p-3 text-md md:text-[16px]">{shipment.name}</td>
                 <td
-                  className={`p-3 font-semibold ${getStatusColor(
+                  className={`p-3 text-md md:text-[16px] font-semibold ${getStatusColor(
                     shipment.status
                   )}`}
                 >
                   {shipment.status}
                 </td>
-                <td className="p-3">{shipment.location}</td>
+                <td className="p-3 text-md md:text-[16px]">
+                  {shipment.location}
+                </td>
               </tr>
             ))}
           </tbody>

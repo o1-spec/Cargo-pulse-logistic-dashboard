@@ -41,7 +41,7 @@ function Shipments() {
   }, [shipments]);
 
   return (
-    <div className="px-6 py-4 w-full min-h-screen relative">
+    <div className="px-2 md:px-6 py-6 md:py-6 w-full min-h-screen relative">
       <h1 className="text-2xl font-semibold mb-6">Shipments Overview</h1>
 
       {/* Shipment Stats */}

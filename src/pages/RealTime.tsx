@@ -67,11 +67,11 @@ function RealTime() {
       : shipments.filter((s) => s.status === selectedStatus);
 
   return (
-    <div className="p-6 w-full min-h-screen">
+    <div className="md:p-6 py-6 px-2 sm:px-4 w-full min-h-screen">
       <h1 className="text-2xl font-semibold mb-6">Real-Time Updates</h1>
 
       {/* Status Filters */}
-      <div className="flex gap-4 mb-6">
+      <div className="flex flex-wrap md:flex-nowrap gap-4 mb-6">
         {Object.keys(statusColors).map((status) => (
           <button
             key={status}

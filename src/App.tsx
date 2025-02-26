@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
@@ -11,15 +11,39 @@ const RealTime = lazy(() => import("./pages/RealTime"));
 const Settings = lazy(() => import("./pages/Settings"));
 
 function App() {
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const toggleSidebar = () => {
+    setSidebarOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isSidebarOpen &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)
+      ) {
+        setSidebarOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isSidebarOpen]);
+
   return (
     <Router>
       <Toaster position="top-right" reverseOrder={false} />
-      <div className="flex">
-        <div className="basis-[18%] h-full">
-          <Sidebar />
+      <div className="xl:flex">
+        <div ref={sidebarRef} className="basis-[18%] h-full">
+          <Sidebar
+            isSidebarOpen={isSidebarOpen}
+            toggleSidebar={toggleSidebar}
+          />
         </div>
         <div className="basis-[82%]">
-          <Navbar />
+          <Navbar toggleSidebar={toggleSidebar} />
           <div className="mt-[60px] rounded-t-2xl dark:bg-[#1e1d1d] dark:text-white">
             <Suspense fallback={<Loading />}>
               <Routes>
