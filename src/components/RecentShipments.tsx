@@ -10,7 +10,7 @@ interface RecentShipmentsTypes {
 function RecentShipments({ openShipmentDetails }: RecentShipmentsTypes) {
   const { shipments } = useShipmentContext();
 
-  const recentShipments = shipments.slice(-5).reverse();
+  const recentShipments = shipments;
 
   return (
     <motion.div
@@ -20,7 +20,7 @@ function RecentShipments({ openShipmentDetails }: RecentShipmentsTypes) {
       transition={{ duration: 1 }}
     >
       <h2 className="text-lg font-semibold mb-2">Recent Shipments</h2>
-      <div className="overflow-auto max-h-[250px]">
+      <div className="overflow-auto max-h-[250px] no-scrollbar overflow-y-auto">
         <table className="w-full text-left border-collapse">
           <thead className="sticky top-0 bg-gray-100 dark:bg-[#2c2c2c]">
             <tr className="border-b">

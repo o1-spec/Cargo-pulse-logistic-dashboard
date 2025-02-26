@@ -3,14 +3,20 @@ import { ShipmentStatus, ShipmentType } from "../types/ShipmentType";
 import toast from "react-hot-toast";
 import socket from "../utils/sockets";
 import { ShipmentContext } from "./ShipmentContext";
+import initialShipments from "../data/shipments.json";
 
 export const ShipmentProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const getStoredShipments = (): ShipmentType[] => {
     try {
-      const storedShipments = localStorage.getItem("shipments");
-      return storedShipments ? JSON.parse(storedShipments) : [];
+      const storedShipments = JSON.parse(
+        localStorage.getItem("shipments") || "[]"
+      );
+      const mergedShipments = [...initialShipments, ...storedShipments];
+      return Array.from(
+        new Map(mergedShipments.map((item) => [item.id, item])).values()
+      );
     } catch (error) {
       console.error("Error loading shipments from localStorage:", error);
       return [];
@@ -19,6 +25,9 @@ export const ShipmentProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const [shipments, setShipments] =
     useState<ShipmentType[]>(getStoredShipments);
+  const [realTimeShipments, setRealTimeShipments] = useState<ShipmentType[]>(
+    []
+  );
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
   );
@@ -61,14 +70,24 @@ export const ShipmentProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem("unreadNotifications", count.toString());
   };
 
-  const addShipment = useCallback((shipment: ShipmentType) => {
-    setShipments((prev) => {
-      if (prev.some((s) => s.id === shipment.id)) return prev;
-      const updatedShipments = [...prev, shipment];
-      saveShipments(updatedShipments);
-      return updatedShipments;
-    });
-  }, []);
+  const addShipment = useCallback(
+    (shipment: ShipmentType, isRealTime = false) => {
+      setShipments((prev) => {
+        if (prev.some((s) => s.id === shipment.id)) return prev;
+        const updatedShipments = [...prev, shipment];
+        saveShipments(updatedShipments);
+        return updatedShipments;
+      });
+
+      if (isRealTime) {
+        setRealTimeShipments((prev) => {
+          if (prev.some((s) => s.id === shipment.id)) return prev;
+          return [...prev, shipment];
+        });
+      }
+    },
+    []
+  );
 
   const updateShipmentStatus = useCallback(
     (id: string, newStatus: ShipmentStatus) => {
@@ -85,6 +104,18 @@ export const ShipmentProvider: React.FC<{ children: React.ReactNode }> = ({
         saveShipments(updatedShipments);
         return updatedShipments;
       });
+
+      setRealTimeShipments((prev) =>
+        prev.map((shipment) =>
+          shipment.id === id
+            ? {
+                ...shipment,
+                status: newStatus,
+                timestamp: new Date().toISOString(),
+              }
+            : shipment
+        )
+      );
 
       if (notificationsEnabled) {
         const newNotification = {
@@ -135,7 +166,7 @@ export const ShipmentProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const handleShipmentUpdate = (newShipment: ShipmentType) => {
       if (!newShipment || !newShipment.id) return;
-      addShipment(newShipment);
+      addShipment(newShipment, true);
     };
 
     const handleStatusUpdate = (updatedShipment: ShipmentType) => {
@@ -165,6 +196,7 @@ export const ShipmentProvider: React.FC<{ children: React.ReactNode }> = ({
     <ShipmentContext.Provider
       value={{
         shipments,
+        realTimeShipments,
         addShipment,
         updateShipmentStatus,
         removeCompletedShipment,

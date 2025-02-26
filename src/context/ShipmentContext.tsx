@@ -9,6 +9,7 @@ interface NotificationType {
 
 export interface ShipmentContextType {
   shipments: ShipmentType[];
+  realTimeShipments: ShipmentType[];
   addShipment: (shipment: ShipmentType) => void;
   updateShipmentStatus: (id: string, newStatus: ShipmentStatus) => void;
   removeCompletedShipment: (id: string) => void;

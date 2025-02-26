@@ -28,8 +28,10 @@ const statusColors: Record<
 };
 
 function RealTime() {
-  const { shipments, updateShipmentStatus, removeCompletedShipment } =
-    useShipmentContext(); // ✅ Context API
+  const { realTimeShipments, updateShipmentStatus, removeCompletedShipment } =
+    useShipmentContext();
+  const shipments = realTimeShipments;
+  console.log(realTimeShipments);
   const [selectedShipment, setSelectedShipment] = useState<ShipmentType | null>(
     null
   );
