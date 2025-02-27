@@ -22,7 +22,7 @@ function Sidebar({ isSidebarOpen, toggleSidebar }: SidebarTypes) {
 
   return (
     <div
-      className={`p-6 bg-[#f7f7f7] dark:text-white dark:bg-[#1a1a1a] h-[100vh] fixed top-0 z-80 -translate-x-[100%] duration-400 transition-all xl:translate-x-0 font-inter ${
+      className={`py-6 pl-4 pr-4 bg-[#f7f7f7] dark:text-white dark:bg-[#1a1a1a] h-[100vh] fixed xl:w-[18%] top-0 z-80 left-0 -translate-x-[100%] duration-400 transition-all xl:translate-x-0 font-inter ${
         isSidebarOpen && "translate-x-0"
       }`}
     >

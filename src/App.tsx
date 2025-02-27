@@ -47,7 +47,7 @@ function App() {
         </div>
         <div className="basis-[82%]">
           <Navbar toggleSidebar={toggleSidebar} />
-          <div className="mt-[60px] rounded-t-2xl dark:bg-[#1e1d1d] dark:text-white">
+          <div className="mt-[60px] rounded-t-2xl  pt-0 xl:pt-4 dark:bg-[#1e1d1d] dark:text-white">
             <Suspense fallback={<Loading />}>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
