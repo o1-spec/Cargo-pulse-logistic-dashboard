@@ -9,8 +9,8 @@ function Shipment({ icon, label, value, bgColor }: ShipmentTableTypes) {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="py-1 px-2 md:p-2 mb-2 md:pb-0 bg-white/20 rounded-full">
-        {icon}
+      <div className="py-1 px-2 md:p-2 bg-white/20 rounded-full flex items-center justify-center">
+        <span className="flex items-center justify-center">{icon}</span>
       </div>
       <div className="ml-2 md:ml-4">
         <p className="text-lg font-bold">{value}</p>

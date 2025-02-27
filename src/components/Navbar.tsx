@@ -53,7 +53,7 @@ function Navbar({ toggleSidebar }: NavbarInterface) {
   };
 
   return (
-    <div className="flex items-center md:gap-10 gap-4 py-4 sm:py-5 px-2 md:px-8 bg-[#f7f7f7] dark:bg-[#1a1a1a] fixed top-0 xl:left-[17%] left-0 right-0 z-50">
+    <div className="flex items-center md:gap-10 gap-4 py-4 sm:py-5 px-2 md:px-8 bg-[#f7f7f7] dark:bg-[#1a1a1a] fixed top-0 left-0 right-0 xl:pl-64 z-50">
       <div className="relative basis-[85%] flex items-center gap-1 sm:gap-4">
         <button onClick={toggleSidebar} className="xl:hidden cursor-pointer">
           <Menu className="w-6 h-6 dark:text-white" />
@@ -63,7 +63,7 @@ function Navbar({ toggleSidebar }: NavbarInterface) {
         </h3>
       </div>
 
-      <div className="flex items-center gap-2 md:gap-8 basis-[15%]">
+      <div className="flex items-center gap-2 md:gap-8 basis-[15%] pr-1.5">
         <button
           onClick={toggleDarkMode}
           className="p-2 rounded-full border cursor-pointer"

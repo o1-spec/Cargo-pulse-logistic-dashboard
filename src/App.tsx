@@ -38,7 +38,7 @@ function App() {
       {/* <button className="bg-green-500 font-semibold text-xl rounded-xl py-3 px-4 text-white">
         Start
       </button> */}
-      <div className="xl:flex">
+      <div className="xl:flex dark:bg-[#1a1a1a]">
         <div ref={sidebarRef} className="basis-[18%] h-full">
           <Sidebar
             isSidebarOpen={isSidebarOpen}
